@@ -1,4 +1,5 @@
 const recast = require('ember-template-recast');
+const { getTelemetryFor } = require('ember-codemods-telemetry-helpers');
 
 const IGNORE_MUSTACHE_STATEMENTS = require('./known-helpers');
 
