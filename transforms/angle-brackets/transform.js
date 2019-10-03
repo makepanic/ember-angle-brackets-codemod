@@ -1,6 +1,6 @@
 const recast = require('ember-template-recast');
-const path = require('path');
-const { getTelemetryFor } = require('ember-codemods-telemetry-helpers');
+// const path = require('path');
+// const { getTelemetryFor } = require('ember-codemods-telemetry-helpers');
 
 const IGNORE_MUSTACHE_STATEMENTS = require('./known-helpers');
 
@@ -103,7 +103,7 @@ function shouldSkipFile(fileInfo, config) {
 }
 
 module.exports = function transform(fileInfo, config) {
-  let { path: filePath } = fileInfo;
+  // let { path: filePath } = fileInfo;
 
   config = config || {};
   config.helpers = config.helpers || [];
@@ -115,8 +115,7 @@ module.exports = function transform(fileInfo, config) {
     return fileInfo.source;
   }
 
-  let runtimeData = getTelemetryFor(path.resolve(filePath));
-  console.log(filePath);
+  // let runtimeData = getTelemetryFor(path.resolve(filePath));
 
   let { code: toAngleBracket } = recast.transform(fileInfo.source, env =>
     transformToAngleBracket(env, fileInfo, config)
