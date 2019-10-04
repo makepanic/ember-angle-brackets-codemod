@@ -18,10 +18,9 @@ function populateInvokeables() {
   let components = [];
   let helpers = [];
   let telemetry = getTelemetry();
-
   for (let name of Object.keys(telemetry)) {
     let entry = telemetry[name];
-
+    logger.info(`${JSON.stringify(name)}`);
     switch (entry.type) {
       case 'Component':
         components.push(name);
@@ -137,11 +136,8 @@ module.exports = function transform(fileInfo, config) {
     return fileInfo.source;
   }
 
-  let runtimeData = getTelemetryFor(path.resolve(filePath));
-  logger.info(filePath);
-  logger.info(JSON.stringify(runtimeData));
   let [components, helpers] = populateInvokeables();
-  logger.info(components, helpers);
+  logger.info(helpers);
   let { code: toAngleBracket } = recast.transform(fileInfo.source, env =>
     transformToAngleBracket(env, fileInfo, config)
   );
