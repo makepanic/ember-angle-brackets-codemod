@@ -1,4 +1,5 @@
 const recast = require('ember-template-recast');
+const logger = require('../../lib/logger');
 
 const IGNORE_MUSTACHE_STATEMENTS = require('./known-helpers');
 
@@ -84,14 +85,14 @@ function shouldSkipFile(fileInfo, config) {
 
   if (source.includes('~')) {
     //skip files with `~` until https://github.com/ember-codemods/ember-angle-brackets-codemod/issues/46 is resolved
-    console.warn(
+    logger.warn(
       `WARNING: ${fileInfo.path} was not converted as it contains a "~" (https://github.com/ember-codemods/ember-angle-brackets-codemod/issues/46)`
     );
     return true;
   }
 
   if (config.skipFilesThatMatchRegex && config.skipFilesThatMatchRegex.test(source)) {
-    console.warn(
+    logger.warn(
       `WARNING: ${fileInfo.path} was not skipped as its content matches the "skipFilesThatMatchRegex" config setting: ${config.skipFilesThatMatchRegex}`
     );
     return true;
@@ -335,7 +336,7 @@ function transformToAngleBracket(env, fileInfo, config) {
       attributes = attributes.concat(namesParams);
     } else {
       if (nodeHasPositionalParameters(node)) {
-        console.warn(
+        logger.warn(
           `WARNING: {{${node.path.original}}} was not converted as it has positional parameters which can't be automatically converted. Source: ${fileInfo.path}`
         );
         return;
