@@ -1,6 +1,7 @@
 const recast = require('ember-template-recast');
-// const path = require('path');
-// const { getTelemetryFor } = require('ember-codemods-telemetry-helpers');
+const path = require('path');
+const { getTelemetryFor, getTelemetry } = require('ember-codemods-telemetry-helpers');
+const logger = require('../../lib/logger');
 
 const IGNORE_MUSTACHE_STATEMENTS = require('./known-helpers');
 
@@ -12,6 +13,27 @@ const _EMPTY_STRING_ = `ANGLE_BRACKET_EMPTY_${Date.now()}`;
 const HTML_ATTRIBUTES = ['class', 'placeholder', 'required'];
 
 const BUILT_IN_COMPONENTS = ['link-to', 'input', 'textarea'];
+
+function populateInvokeables() {
+  let components = [];
+  let helpers = [];
+  let telemetry = getTelemetry();
+
+  for (let name of Object.keys(telemetry)) {
+    let entry = telemetry[name];
+
+    switch (entry.type) {
+      case 'Component':
+        components.push(name);
+        break;
+      case 'Helper':
+        helpers.push(name);
+        break;
+    }
+  }
+
+  return [components, helpers];
+}
 
 function isAttribute(key) {
   return HTML_ATTRIBUTES.includes(key) || key.startsWith('data-');
@@ -103,7 +125,7 @@ function shouldSkipFile(fileInfo, config) {
 }
 
 module.exports = function transform(fileInfo, config) {
-  // let { path: filePath } = fileInfo;
+  let { path: filePath } = fileInfo;
 
   config = config || {};
   config.helpers = config.helpers || [];
@@ -115,8 +137,11 @@ module.exports = function transform(fileInfo, config) {
     return fileInfo.source;
   }
 
-  // let runtimeData = getTelemetryFor(path.resolve(filePath));
-
+  let runtimeData = getTelemetryFor(path.resolve(filePath));
+  logger.info(filePath);
+  logger.info(JSON.stringify(runtimeData));
+  let [components, helpers] = populateInvokeables();
+  logger.info(components, helpers);
   let { code: toAngleBracket } = recast.transform(fileInfo.source, env =>
     transformToAngleBracket(env, fileInfo, config)
   );
